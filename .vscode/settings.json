@@ -1,0 +1,6 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv",
+  "files.associations": { "*.css": "tailwindcss" },
+  "tailwindCSS.includeLanguages": { "javascript": "html" },
+  "files.exclude": { "**/__pycache__": true, "staticfiles": true }
+}

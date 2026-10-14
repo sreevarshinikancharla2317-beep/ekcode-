@@ -1,0 +1,77 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EkCode: One Nation, One Material Code (SIH26099)</title>
+<meta name="description" content="AI harmonization of material master codes across CPSEs: matching, standard descriptions, national codes, maker-checker approval, SAP mapping and audit trail.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%23FFB547' stroke-width='2.4'/%3E%3Ccircle cx='5' cy='7' r='2.6' fill='%23FF7A45'/%3E%3Ccircle cx='27' cy='8' r='2.6' fill='%234EA8FF'/%3E%3Ccircle cx='16' cy='28' r='2.6' fill='%232FD6C3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/app.css' %}">
+<script src="{% static 'vendor/three.min.js' %}" defer></script>
+<script src="{% static 'js/app.js' %}" defer></script>
+</head>
+<body data-view="login" class="auth font-body text-[15px] leading-normal text-ek-ink antialiased">
+<canvas id="gl" aria-label="3D field of material records from four companies. Duplicates fuse into one national code." role="img"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+<div id="labels" aria-hidden="true"></div>
+<div id="tip" role="tooltip"></div>
+<div class="noscene fixed inset-0 z-[1] hidden place-items-center text-ek-ink3" id="noscene">3D view needs WebGL. Everything else works.</div>
+
+<section id="login" class="items-center" aria-label="Sign in to EkCode">
+  <div class="lg-brand">
+    <div class="brand"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 7 16 16M27 8 16 16M16 28V16" stroke="rgba(230,238,248,.35)" stroke-width="1.2"/><circle cx="16" cy="16" r="5.5" fill="none" stroke="#FFB547" stroke-width="2.4"/><circle cx="5" cy="7" r="2.6" fill="#FF7A45"/><circle cx="27" cy="8" r="2.6" fill="#4EA8FF"/><circle cx="16" cy="28" r="2.6" fill="#2FD6C3"/></svg><b>EkCode</b></div>
+    <h1 class="lg-h">One Nation,<br>One Material Code.</h1>
+    <p class="lg-p">Every public sector enterprise names the same valve, bearing and cable differently. EkCode reads their material masters, fuses duplicates into one national code, and keeps every company code working.</p>
+    <dl class="lg-facts flex flex-wrap" id="lgFacts"></dl>
+  </div>
+  <div class="panel lg-card" id="lgCard"></div>
+  <p class="lg-foot">Prototype for Smart India Hackathon 2026, problem statement SIH26099. Sample data only.</p>
+</section>
+
+<header class="top flex items-center gap-[22px]">
+  <div class="brand flex flex-none items-center gap-2.5">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 7 16 16M27 8 16 16M16 28V16" stroke="rgba(230,238,248,.35)" stroke-width="1.2"/><circle cx="16" cy="16" r="5.5" fill="none" stroke="#FFB547" stroke-width="2.4"/><circle cx="5" cy="7" r="2.6" fill="#FF7A45"/><circle cx="27" cy="8" r="2.6" fill="#4EA8FF"/><circle cx="16" cy="28" r="2.6" fill="#2FD6C3"/></svg>
+    <b>EkCode</b><span>One Nation, One Material Code</span>
+  </div>
+  <nav class="nav flex min-w-0 flex-1 gap-1 overflow-x-auto" aria-label="Sections">
+    <button data-view="overview">Overview</button>
+    <button data-view="sources">Sources</button>
+    <button data-view="check">Check a part</button>
+    <button data-view="review">Review<span class="badge" id="qBadge"></span></button>
+    <button data-view="catalogue">Catalogue</button>
+    <button data-view="savings">Savings</button>
+    <button data-view="mapping">Mapping</button>
+    <button data-view="audit">Audit</button>
+  </nav>
+  <button class="find-btn" data-act="find" aria-label="Find a material"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Find</span><kbd>Ctrl K</kbd></button>
+  <div class="role relative flex-none">
+    <button class="role-btn" id="roleBtn" aria-haspopup="true" aria-expanded="false"><span class="av" id="roleAv"></span><span class="who"><strong id="roleName"></strong><small id="roleTitle"></small></span></button>
+    <div class="role-menu" id="roleMenu" role="menu"></div>
+  </div>
+</header>
+
+<main class="views pointer-events-none">
+  <section class="view active" id="v-overview" aria-label="Overview">
+    <div class="panel ov-left" id="ovLeft"></div>
+    <div class="panel ov-right" id="ovRight"></div>
+    <div class="ov-bottom"><div class="panel cpse-bar" id="cpseBar"></div></div>
+  </section>
+  <section class="view" id="v-sources" aria-label="Data sources"><div class="panel sheet" id="srcSheet"></div></section>
+  <section class="view" id="v-check" aria-label="Check a part"><div class="panel sheet" id="chkSheet"></div></section>
+  <section class="view" id="v-savings" aria-label="Savings"><div class="panel sheet" id="savSheet"></div></section>
+  <section class="view" id="v-review" aria-label="Review"><div class="panel rv" id="rvSheet"></div></section>
+  <section class="view" id="v-catalogue" aria-label="National catalogue"><div class="panel sheet" id="catSheet"></div></section>
+  <section class="view" id="v-mapping" aria-label="Mapping and SAP"><div class="panel sheet" id="mapSheet"></div></section>
+  <section class="view" id="v-audit" aria-label="Audit trail"><div class="panel sheet" id="audSheet"></div></section>
+</main>
+<div id="toast" role="status" aria-live="polite"></div>
+<div class="overlay" id="findOv" hidden><div class="panel find" role="dialog" aria-modal="true" aria-label="Find a material">
+  <input class="in" id="findIn" type="search" placeholder="National code, legacy code or words like gate valve DN50" autocomplete="off" aria-label="Find a material">
+  <div class="find-res" id="findRes" role="listbox"></div><p class="find-hint">Arrow keys to move, Enter to open, Esc to close</p></div></div>
+<div class="overlay" id="dlgOv" hidden><div class="panel dlg" role="dialog" aria-modal="true" aria-labelledby="dlgTitle"><h2 id="dlgTitle"></h2><div id="dlgBody"></div><div class="tools dlg-actions" id="dlgActs"></div></div></div>
+<input type="file" id="fileIn" accept=".csv,text/csv" hidden>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "EkCode: prepare database",
+      "type": "shell",
+      "command": "python manage.py migrate && python manage.py seed_ekcode",
+      "problemMatcher": []
+    },
+    {
+      "label": "EkCode: build CSS and JS",
+      "type": "shell",
+      "command": "npm install && npm run build",
+      "problemMatcher": []
+    },
+    {
+      "label": "EkCode: watch Tailwind CSS",
+      "type": "shell",
+      "command": "npm run watch:css",
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}

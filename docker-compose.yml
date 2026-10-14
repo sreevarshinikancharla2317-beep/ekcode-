@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ekcode
+      POSTGRES_USER: ekcode
+      POSTGRES_PASSWORD: ekcode
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ekcode -d ekcode"]
+      interval: 3s
+      retries: 20
+  web:
+    build: .
+    ports: ["8001:8000"]
+    environment:
+      DATABASE_URL: postgres://ekcode:ekcode@db:5432/ekcode
+      DJANGO_SECRET_KEY: change-me-in-production
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
+      DJANGO_CSRF_TRUSTED_ORIGINS: http://localhost:8001,http://127.0.0.1:8001
+      DJANGO_SECURE_COOKIES: "0"   # plain http on localhost. Behind HTTPS set this to "1" and add DJANGO_HTTPS: "1"
+    depends_on:
+      db: { condition: service_healthy }
+volumes:
+  pgdata:

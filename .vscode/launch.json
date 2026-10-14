@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "EkCode: run Django",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "args": ["runserver", "127.0.0.1:8001"],
+      "django": true,
+      "justMyCode": true,
+      "preLaunchTask": "EkCode: prepare database"
+    },
+    {
+      "name": "EkCode: run tests",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "args": ["test", "core"],
+      "django": true
+    }
+  ]
+}
